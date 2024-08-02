@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 
 const int MAX_SPECIALIZATION = 20;
@@ -92,11 +92,14 @@ struct hospital_system {
     int menu() {
         int choice = -1;
         while (choice == -1) {
-            cout << "\nEnter your choice:\n";
-            cout << "1) Add new patient\n";
-            cout << "2) Print all patients\n";
-            cout << "3) Get next patient\n";
-            cout << "4) Exit\n";
+            cout << '\n';
+            cout << setw(47) << left << "" << "-----------------------\n";
+            cout << setw(47) << left << "" << "1) Add new patient\n";
+            cout << setw(47) << left << "" << "2) Print all patients\n";
+            cout << setw(47) << left << "" << "3) Get next patient\n";
+            cout << setw(47) << left << "" << "4) Exit\n";
+            cout << setw(47) << left << "" << "-----------------------\n";
+            cout << setw(47) << left << "" << "\nEnter your choice: ";
 
             cin >> choice;
 
@@ -130,7 +133,7 @@ struct hospital_system {
     }
 
     void print_patients() {
-        cout << "****************************\n";
+        cout << "-------------------------------------\n";
         for (int spec = 0; spec < MAX_SPECIALIZATION; ++spec)
             queues[spec].print();
     }
