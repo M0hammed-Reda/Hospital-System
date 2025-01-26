@@ -1,154 +1,154 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX_SPECIALIZATION = 20;
-const int MAX_QUEUE = 5;
+class Patient {
+private:
+    string name = "";
+    int age = 0;
+    string phone_number = "";
+    string address = "";
+    bool statu = 0;
 
-struct hospital_queue {
+public:
+    Patient(string name, int age, string phone_number, string address, bool statu)
+        : name(name), age(age), phone_number(phone_number), address(address), statu(statu) {}
 
-    string names[MAX_QUEUE];
-    int status[MAX_QUEUE];
-    int len;
-    int spec;
-
-    hospital_queue() {
-        len = 0;
-        spec = -1;
+    string get_name() const {
+        return name;
     }
 
-    hospital_queue(int _spec) {
-        len = 0;
-        spec = _spec;
+    int get_age() const {
+        return age;
     }
 
-    bool add_end(string name, bool statu) {
-        if (len == MAX_QUEUE)
-            return false;
-        names[len] = name, status[len] = statu, len++;
-        return true;
+    string get_phone_number() const {
+        return phone_number;
     }
 
-    bool add_front(string name, bool statu) {
-        if (len == MAX_QUEUE)
-            return false;
-        for (int i = len - 1; i >= 0; i--) {
-            names[i + 1] = names[i];
-            status[i + 1] = status[i];
-        }
-        names[0] = name, status[0] = statu, len++;
-        return true;
+    string get_address() const {
+        return address;
     }
 
-    void remove_front() {
-        if (len == 0) {
-            cout << "No patient at this moment, Have rest, Dr.\n";
-            return;
-        }
- 
-        cout << names[0] << " please go with the Dr.\n";
-        for (int i = 1; i < len; i++) {
-            names[i - 1] = names[i];
-            status[i - 1] = status[i];
-        }
-        len--;
-    }
-
-    void print() {
-        if (len == 0)
-            return;
-
-        cout << "There are " << len << " patients in specialization " << spec << "\n";
-        for (int i = 0; i < len; i++) {
-            cout << names[i] << " ";
-            status[i] ? cout << " regular \n" : cout << " urgent \n";
-        }
-        cout << "\n";
+    const char* get_statu() const {
+        return statu == 0 ? "Regular" : "Urgent";
     }
 };
 
-struct hospital_system {
-    hospital_queue queues[MAX_SPECIALIZATION + 1];
+class HospitalSystem {
+private:
+    map<int, deque<Patient>> specialization;
 
-    hospital_system() {
-        for (int i = 0; i < MAX_SPECIALIZATION; ++i)
-            queues[i] = hospital_queue(i);
+    void print_separator() const {
+        cout << "\n=======================================================\n";
+    }
+
+public:
+    void add_new_patient() {
+        print_separator();
+        cout << "\nEnter Patient Details:\n";
+
+        cout << "Name: ";
+        string name;
+        cin >> name;
+
+        cout << "Age: ";
+        int age;
+        cin >> age;
+
+        cout << "Phone: ";
+        string phone;
+        cin >> phone;
+
+        cout << "Address: ";
+        string address;
+        cin >> address;
+
+        cout << "Status (0 for Regular, 1 for Urgent): ";
+        bool statu;
+        cin >> statu;
+
+        Patient patient(name, age, phone, address, statu);
+
+        cout << "Specialization: ";
+        int s;
+        cin >> s;
+
+        if ((int)specialization[s].size() < 5) {
+            (statu == 0) ? specialization[s].push_front(patient) : specialization[s].push_back(patient);
+            cout << "\nPatient added successfully!\n";
+        }
+        else {
+            cout << "\nSorry, we can't add more than 5 patients in this specialization.\n";
+        }
+    }
+
+    void print_all_patient() {
+        print_separator();
+        cout << "\nAll Patients in the System:\n";
+
+        for (auto& pair : specialization) {
+            cout << "\nSpecialization " << pair.first << " (" << pair.second.size() << " patients):\n";
+
+            for (int i = 0; i < (int)pair.second.size(); ++i) {
+                cout << "  " << i + 1 << ") Name: " << pair.second[i].get_name()
+                    << ", Age: " << pair.second[i].get_age()
+                    << ", Status: " << pair.second[i].get_statu() << "\n";
+            }
+        }
+    }
+
+    void get_next_patient() {
+        print_separator();
+        cout << "\nEnter Specialization: ";
+        int s;
+        cin >> s;
+
+        if (specialization[s].empty()) {
+            cout << "\nNo patients at the moment. Have a rest, Dr. Mohamed Reda.\n";
+        }
+        else {
+            cout << "\nNext Patient: " << specialization[s][0].get_name() << ". Please proceed to Dr. Mohamed Reda.\n";
+            specialization[s].pop_front();
+        }
     }
 
     void run() {
         while (true) {
-            int choice = menu();
+            print_separator();
+            cout << "\nMenu:\n";
+            cout << "  1) Add New Patient\n";
+            cout << "  2) Print All Patients\n";
+            cout << "  3) Get Next Patient\n";
+            cout << "  4) Exit\n";
+            cout << "\nEnter your choice: ";
 
-            if (choice == 1)
-                add_patient();
-            else if (choice == 2)
-                print_patients();
-            else if (choice == 3)
-                get_next_patients();
-            else
-                break;
-        }
-    }
-
-    int menu() {
-        int choice = -1;
-        while (choice == -1) {
-            cout << '\n';
-            cout << setw(47) << left << "" << "-----------------------\n";
-            cout << setw(47) << left << "" << "1) Add new patient\n";
-            cout << setw(47) << left << "" << "2) Print all patients\n";
-            cout << setw(47) << left << "" << "3) Get next patient\n";
-            cout << setw(47) << left << "" << "4) Exit\n";
-            cout << setw(47) << left << "" << "-----------------------\n";
-            cout << setw(47) << left << "" << "\nEnter your choice: ";
-
+            int choice;
             cin >> choice;
 
-            if (!(1 <= choice && choice <= 4)) {
-                cout << "Invalid choice. Try again\n";
-                choice = -1;
+            switch (choice) {
+            case 1:
+                add_new_patient();
+                break;
+            case 2:
+                print_all_patient();
+                break;
+            case 3:
+                get_next_patient();
+                break;
+            case 4:
+                cout << "\nExiting the system. Goodbye!\n";
+                exit(0);
+            default:
+                cout << "\nInvalid choice! Please enter a number between 1 and 4.\n";
+                break;
             }
         }
-        return choice;
-    }
-
-    bool add_patient() {
-        int spec, st;
-        string name;
-
-        cout << "Enter specialization, name, status: ";
-        cin >> spec >> name >> st;
-
-        bool status;
-        if (st == 0)
-            status = queues[spec].add_end(name, st);
-        else
-            status = queues[spec].add_front(name, st);
-
-        if (status == false) {
-            cout << "Sorry we can't add more patients for this specialization\n";
-            return false;
-        }
-
-        return true;
-    }
-
-    void print_patients() {
-        cout << "-------------------------------------\n";
-        for (int spec = 0; spec < MAX_SPECIALIZATION; ++spec)
-            queues[spec].print();
-    }
-
-    void get_next_patients() {
-        int spec;
-        cout << "Enter specialization: ";
-        cin >> spec;
-
-        queues[spec].remove_front();
     }
 };
 
 int main() {
-    hospital_system hospital = hospital_system();
+    HospitalSystem hospital;
     hospital.run();
+
     return 0;
 }
